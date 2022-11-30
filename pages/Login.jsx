@@ -1,20 +1,20 @@
+import React from "react";
 import {
+  Alert,
+  View,
+  TextInput,
+  TouchableOpacity,
   StyleSheet,
   Text,
-  TextInput,
-  View,
-  TouchableOpacity,
-  Alert,
   AsyncStorage,
 } from "react-native";
-import React, { useState, useEffect } from "react";
 import { PRIMARY_COLOR, DANGER_COLOR, DISABLED_COLOR } from "../utils/const";
-import axios from "axios";
-import Home from "./Home";
-import Register from "./Register";
-import { Link } from "@react-navigation/native";
 
-export default function Auth({ navigation }) {
+import { useState, useEffect } from "react";
+import { Link } from "@react-navigation/native";
+import axios from "axios";
+
+export default Login = ({ navigation }) => {
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -23,20 +23,18 @@ export default function Auth({ navigation }) {
 
   const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   handleNavigate();
-  // }, []);
-
   const handleNavigate = async () => {
     const getToken = await AsyncStorage.getItem("user");
     console.log("getToken ==>>", getToken);
     // console.log("nav ==>>", navigation);
-    if (!getToken) {
-      navigation.replace("Auth");
-    } else {
-      navigation.replace("Home");
+    if (getToken !== null) {
+      navigation.replace("MainApp");
     }
   };
+
+  useEffect(() => {
+    handleNavigate();
+  }, []);
 
   const showAlert = (alert) =>
     Alert.alert(
@@ -67,7 +65,7 @@ export default function Auth({ navigation }) {
     // console.log(user);
     setLoading(true);
     axios
-      .post("http://192.168.43.185:4001/auth/register", user)
+      .post("http://192.168.43.185:4001/auth/login", user)
       .then((res) => {
         setLoading(false);
         // const user = AsyncStorage.getItem("user");
@@ -77,7 +75,9 @@ export default function Auth({ navigation }) {
         } catch (error) {
           console.log(error);
         }
-        showAlert("Successfuly registered");
+        showAlert("Successfuly Login");
+        navigation.replace("MainApp");
+
         // return console.log("user ==>>", user);
       })
       .catch((err) => {
@@ -87,11 +87,6 @@ export default function Auth({ navigation }) {
         showAlert(err.response.data);
       });
   };
-
-  let token = AsyncStorage.getItem("user")
-    .then((data) => data)
-    .catch((err) => console.log(err));
-  console.log("Token ==>>", token);
 
   return (
     <View style={styles.container}>
@@ -114,7 +109,6 @@ export default function Auth({ navigation }) {
           </Text>
         </View>
       </TouchableOpacity>
-
       <Text style={styles.register}>
         Don't have any account,
         <Link to="/Register" style={{ color: PRIMARY_COLOR }}>
@@ -124,7 +118,7 @@ export default function Auth({ navigation }) {
       </Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

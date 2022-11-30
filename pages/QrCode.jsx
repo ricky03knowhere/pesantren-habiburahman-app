@@ -1,7 +1,9 @@
+import { Link } from "@react-navigation/native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
+import { PRIMARY_COLOR } from "../utils/const";
 
 export default function QrCode() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -64,6 +66,9 @@ export default function QrCode() {
         />
       )}
       <StatusBar style="auto" />
+
+      <Link to='/ConnectedDevice' style={{color: PRIMARY_COLOR}}> &raquo; Connected Device</Link>
+      
     </View>
   );
 }

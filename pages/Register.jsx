@@ -1,20 +1,20 @@
+import React from "react";
 import {
+  Alert,
+  View,
+  TextInput,
+  TouchableOpacity,
   StyleSheet,
   Text,
-  TextInput,
-  View,
-  TouchableOpacity,
-  Alert,
   AsyncStorage,
 } from "react-native";
-import React, { useState, useEffect } from "react";
 import { PRIMARY_COLOR, DANGER_COLOR, DISABLED_COLOR } from "../utils/const";
-import axios from "axios";
-import Home from "./Home";
-import Register from "./Register";
-import { Link } from "@react-navigation/native";
 
-export default function Auth({ navigation }) {
+import { useState } from "react";
+import { Link } from "@react-navigation/native";
+import axios from "axios";
+
+export default Register = ({ navigation }) => {
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -22,21 +22,6 @@ export default function Auth({ navigation }) {
   });
 
   const [loading, setLoading] = useState(false);
-
-  // useEffect(() => {
-  //   handleNavigate();
-  // }, []);
-
-  const handleNavigate = async () => {
-    const getToken = await AsyncStorage.getItem("user");
-    console.log("getToken ==>>", getToken);
-    // console.log("nav ==>>", navigation);
-    if (!getToken) {
-      navigation.replace("Auth");
-    } else {
-      navigation.replace("Home");
-    }
-  };
 
   const showAlert = (alert) =>
     Alert.alert(
@@ -78,6 +63,7 @@ export default function Auth({ navigation }) {
           console.log(error);
         }
         showAlert("Successfuly registered");
+        navigation.replace("Login");
         // return console.log("user ==>>", user);
       })
       .catch((err) => {
@@ -88,14 +74,14 @@ export default function Auth({ navigation }) {
       });
   };
 
-  let token = AsyncStorage.getItem("user")
-    .then((data) => data)
-    .catch((err) => console.log(err));
-  console.log("Token ==>>", token);
-
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Login Page</Text>
+      <Text style={styles.header}>Register Page</Text>
+      <TextInput
+        placeholder={"Full Name"}
+        onChangeText={handleOnChange("name")}
+        style={styles.input}
+      />
       <TextInput
         placeholder={"Email"}
         onChangeText={handleOnChange("email")}
@@ -110,21 +96,20 @@ export default function Auth({ navigation }) {
       <TouchableOpacity onPress={handleOnSubmit}>
         <View style={{ backgroundColor: DANGER_COLOR, padding: 10 }}>
           <Text style={{ color: "white", textAlign: "center" }}>
-            {loading ? "Loading..." : "Login"}
+            {loading ? "Loading..." : "Save"}
           </Text>
         </View>
       </TouchableOpacity>
-
       <Text style={styles.register}>
-        Don't have any account,
-        <Link to="/Register" style={{ color: PRIMARY_COLOR }}>
+        Already have an account,
+        <Link to="/Login" style={{ color: PRIMARY_COLOR }}>
           {" "}
-          register here
+          login here
         </Link>
       </Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
