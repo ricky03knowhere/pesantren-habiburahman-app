@@ -2,8 +2,9 @@ import { Link } from "@react-navigation/native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
-import { PRIMARY_COLOR } from "../utils/const";
+import { Button, StyleSheet, Text, View, AsyncStorage } from "react-native";
+import { API_URL, DANGER_COLOR, PRIMARY_COLOR, SECONDARY_COLOR, TERNARY_COLOR, WARNING_COLOR } from "../utils/const";
+import axios from "axios";
 
 export default function QrCode() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -23,10 +24,29 @@ export default function QrCode() {
   }, []);
 
   // What happens when we scan the qr code
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
     setText(data);
     console.log("Type: " + type + "\nData: " + data);
+    let token = await AsyncStorage.getItem("user")
+      .then((data) => data)
+      .catch((err) => console.log(err));
+
+    const QRCodeData = {
+      qrCodeId: data,
+      token,
+      deviceInformation: {
+        deviceName: "Samsung",
+        deviceModel: "Galaxy J3 pro",
+        deviceOS: "Android",
+        deviceVersion: "9.0",
+      },
+    };
+    console.log("qrCodeData ==>> ", QRCodeData);
+    await axios
+      .post(API_URL + "qr/validate", QRCodeData)
+      .then(() => "Succesfully Loggedin")
+      .catch((err) => console.log(err));
   };
 
   // Check permission and return the screens
@@ -57,18 +77,23 @@ export default function QrCode() {
           style={{ height: 600, width: 600 }}
         />
       </View>
-      <Text style={styles.mainText}> {text}</Text>
+      <Text style={styles.mainText}>QRCode Id : {text}</Text>
+      <Text style={styles.successText}>Succesfully Loggedin on webite</Text>
       {scanned && (
-        <Button
-          title="Scan again?"
-          onPress={() => setScanned(false)}
-          color="tomato"
-        />
+        <>
+          <Button
+            title="Scan again?"
+            onPress={() => setScanned(false)}
+            color="tomato"
+          />
+        </>
       )}
       <StatusBar style="auto" />
 
-      <Link to='/ConnectedDevice' style={{color: PRIMARY_COLOR}}> &raquo; Connected Device</Link>
-      
+      <Link to="/ConnectedDevice" style={{ color: PRIMARY_COLOR }}>
+        {" "}
+        &raquo; Connected Device
+      </Link>
     </View>
   );
 }
@@ -93,6 +118,17 @@ const styles = StyleSheet.create({
   mainText: {
     fontSize: 16,
     margin: 20,
+  },
+  successText: {
+    height: 100,
+    width: 300,
+    fontSize: 20,
+    margin: 20,
+    padding: 12,
+    textAlign: 'center',
+    lineHeight: 80,
+    borderRadius: 10,
+    backgroundColor: PRIMARY_COLOR,
   },
 
   header: {

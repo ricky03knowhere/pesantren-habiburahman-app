@@ -24,7 +24,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#55CB95"
-      }
+      },
+      "package": "pesantren_app.co"
     },
     "web": {
       "favicon": "./assets/adaptive-icon.png"
